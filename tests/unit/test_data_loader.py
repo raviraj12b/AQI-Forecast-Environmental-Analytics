@@ -46,3 +46,32 @@ def test_load_dataset_header_only_file_raises(tmp_path):
     header_only.write_text("City,Date,AQI,PM2.5,PM10,NO2,SO2,CO,O3\n")
     with pytest.raises(DatasetLoadError):
         load_dataset(header_only)
+
+
+def test_load_dataset_dayfirst_prevents_ambiguous_date_corruption(tmp_path):
+    """
+    Regression test: found against the real Delhi AQI dataset, whose dates
+    are DD/MM/YY. Without dayfirst=True, "02/01/18" silently parsed as
+    1 Feb instead of 2 Jan -- 36% of that dataset's rows were affected.
+    """
+    ambiguous_dates = tmp_path / "ambiguous_dates.csv"
+    ambiguous_dates.write_text(
+        "City,Date,AQI,PM2.5,PM10,NO2,SO2,CO,O3\n"
+        "TestCity,02/01/18,100,10,10,10,10,1,10\n"
+    )
+
+    default_df = load_dataset(ambiguous_dates)
+    dayfirst_df = load_dataset(ambiguous_dates, dayfirst=True)
+
+    assert default_df["Date"].iloc[0] == pd.Timestamp("2018-02-01")
+    assert dayfirst_df["Date"].iloc[0] == pd.Timestamp("2018-01-02")
+
+
+def test_load_dataset_explicit_date_format(tmp_path):
+    explicit_format_file = tmp_path / "explicit_format.csv"
+    explicit_format_file.write_text(
+        "City,Date,AQI,PM2.5,PM10,NO2,SO2,CO,O3\n"
+        "TestCity,02/01/18,100,10,10,10,10,1,10\n"
+    )
+    df = load_dataset(explicit_format_file, date_format="%d/%m/%y")
+    assert df["Date"].iloc[0] == pd.Timestamp("2018-01-02")
