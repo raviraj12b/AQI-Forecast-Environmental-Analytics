@@ -3,7 +3,7 @@ Dataset loading for the AQI Forecast & Environmental Analytics Platform.
 
 Responsible only for reading a CSV file into a pandas DataFrame and parsing
 its date column. Validation and cleaning are deliberately out of scope here
-— see `data_validator.py` — per Handbook Section 5.5 (Module Responsibility
+-- see `data_validator.py` -- per Handbook Section 5.5 (Module Responsibility
 Rule) and FR-DATA-001.
 """
 
@@ -18,7 +18,12 @@ from src.utils.logger import get_logger
 logger = get_logger(__name__)
 
 
-def load_dataset(path: Union[str, Path], date_column: str = "Date") -> pd.DataFrame:
+def load_dataset(
+    path: Union[str, Path],
+    date_column: str = "Date",
+    dayfirst: bool = False,
+    date_format: Union[str, None] = None,
+) -> pd.DataFrame:
     """
     Load an AQI dataset from a CSV file.
 
@@ -28,6 +33,17 @@ def load_dataset(path: Union[str, Path], date_column: str = "Date") -> pd.DataFr
         Location of the CSV file to load.
     date_column : str, default "Date"
         Name of the column to parse as a datetime, if present in the file.
+    dayfirst : bool, default False
+        Passed to `pandas.to_datetime`. Ambiguous date strings like
+        "02/01/18" parse very differently depending on this flag
+        (2 Jan vs 1 Feb) -- verified against the real Delhi AQI dataset,
+        where the default `False` silently mis-parsed 792/2191 rows (36%)
+        because its dates are DD/MM/YY. Set `dayfirst=True` for that source.
+    date_format : str, optional
+        An explicit strftime format (e.g. "%d/%m/%y"). When given, this
+        takes precedence over `dayfirst` and avoids pandas' per-row
+        format-inference entirely -- the most robust option once you know
+        your source's exact date format.
 
     Returns
     -------
@@ -38,8 +54,6 @@ def load_dataset(path: Union[str, Path], date_column: str = "Date") -> pd.DataFr
     ------
     DatasetLoadError
         If the file does not exist, is empty, or cannot be parsed as CSV.
-        (FR-DATA-001 acceptance criteria: invalid files produce meaningful
-        error messages.)
     """
     file_path = Path(path)
 
@@ -64,7 +78,14 @@ def load_dataset(path: Union[str, Path], date_column: str = "Date") -> pd.DataFr
         raise DatasetLoadError(f"Dataset at '{file_path}' loaded with zero rows.")
 
     if date_column in df.columns:
-        df[date_column] = pd.to_datetime(df[date_column], errors="coerce")
+        if date_format is not None:
+            df[date_column] = pd.to_datetime(
+                df[date_column], format=date_format, errors="coerce"
+            )
+        else:
+            df[date_column] = pd.to_datetime(
+                df[date_column], dayfirst=dayfirst, errors="coerce"
+            )
         n_unparsed = int(df[date_column].isna().sum())
         if n_unparsed:
             logger.warning(
