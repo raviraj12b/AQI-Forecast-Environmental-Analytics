@@ -36,6 +36,7 @@ dist/
 # models/trained/*.joblib
 # models/trained/*.pkl
 
-# Raw/processed data — uncomment if datasets should NOT be committed
-# data/raw/*
-# data/processed/*
+Raw/processed data — uncomment if datasets should NOT be committed
+data/raw/*
+data/processed/*
+outputs/*
