@@ -5,27 +5,31 @@ are documented in this file.
 
 ## [Unreleased]
 
-### Added
-- Initial project folder structure (Milestone 1).
-- Centralized configuration module (`config/`).
-- `requirements.txt`, `.gitignore`, MIT `LICENSE`, initial `README.md`.
-- Dataset selection/provenance documentation (`data/metadata/DATASET_SOURCE.md`).
-- Data loading, validation, and cleaning modules (`src/preprocessing/`, FR-DATA-001/002/003/004/005).
-- Shared `src/utils/exceptions.py` and `src/utils/logger.py`.
-- Full unit test suite for the data layer (synthetic fixture-based).
-- **Real Delhi AQI dataset placed at `data/raw/Delhi_AQI_Dataset.csv`** (2,191 rows, 2018–2024).
-- **`01_data_understanding.ipynb`, `02_data_cleaning.ipynb`, `03_exploratory_data_analysis.ipynb`**
-  — real, executed notebooks (18 charts across 10 required ML-EDA-002 chart types, each interpreted).
-- **`data/metadata/DATA_QUALITY_REPORT.md`** — Milestone 2 quality report deliverable.
-- Cleaned dataset persisted to `data/processed/delhi_aqi_cleaned.csv`.
+### Added (Milestone 3 — Feature Engineering)
+- `src/feature_engineering/date_features.py` (ML-FE-001): Year, Month,
+  Quarter, Week, Day, DayOfWeek, IsWeekend, DayOfYear, Season.
+- `src/feature_engineering/time_series_prep.py` (ML-TS-001/002):
+  `reindex_to_daily_calendar()` and `chronological_train_val_test_split()`.
+- `src/feature_engineering/lag_features.py` (ML-FE-002): Lag_1/3/7/14/30,
+  with a guard that rejects non-continuous-calendar input rather than
+  silently computing wrong values across a gap.
+- `src/feature_engineering/rolling_features.py` (ML-FE-003): rolling
+  mean/median/std over 7/14/30-day windows, same continuity guard.
+- `src/feature_engineering/scaling.py` (ML-FE-004): StandardScaler/
+  MinMaxScaler/RobustScaler support — implemented but not auto-applied
+  (Handbook policy: scaling is a per-model Milestone 4 decision).
+- 35 unit tests across the 5 new modules, including a dedicated test
+  proving the gap-guard prevents lag values from crossing the 2022 gap.
+- `notebooks/04_feature_engineering.ipynb` — real, executed pipeline on
+  the actual dataset producing `delhi_aqi_features.csv`, `train.csv`,
+  `val.csv`, `test.csv`.
+- `data/metadata/FEATURE_DOCUMENTATION.md` — MS-003 deliverable, including
+  an explicit Group A (safe for modeling) / Group B (exclude — leakage
+  risk) column split.
 
-### Fixed
-- **Date-parsing bug** in `data_loader.py`: default parsing silently
-  corrupted 36% of the real dataset's dates (ambiguous `DD/MM/YY` vs
-  `MM/DD/YY`). Added `dayfirst`/`date_format` parameters; regression test added.
-
-### Key findings
-- Pollutant columns are exact linear transforms of AQI (`PM2.5 = 0.55 × AQI`,
-  r = 1.00) — excluded from future model input features (data-leakage risk).
-- 366 calendar-day gaps (14.3%) in the date range — flagged for Milestone 3.
-- Strong seasonal signal (winter ≈ 2× monsoon AQI); weak day-of-week signal.
+### Key finding
+- The 366 "missing days" found in EDA are not scattered — it's **all of
+  2022 missing** (365 consecutive days) plus one isolated day. Naive
+  `.shift()`/`.rolling()` on row-ordered data would have silently reached
+  back into December 2021 for early-2023 rows. Fixed by reindexing to a
+  continuous daily calendar before computing any lag/rolling feature.
