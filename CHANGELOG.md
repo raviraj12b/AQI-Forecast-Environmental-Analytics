@@ -5,31 +5,32 @@ are documented in this file.
 
 ## [Unreleased]
 
-### Added (Milestone 3 — Feature Engineering)
-- `src/feature_engineering/date_features.py` (ML-FE-001): Year, Month,
-  Quarter, Week, Day, DayOfWeek, IsWeekend, DayOfYear, Season.
-- `src/feature_engineering/time_series_prep.py` (ML-TS-001/002):
-  `reindex_to_daily_calendar()` and `chronological_train_val_test_split()`.
-- `src/feature_engineering/lag_features.py` (ML-FE-002): Lag_1/3/7/14/30,
-  with a guard that rejects non-continuous-calendar input rather than
-  silently computing wrong values across a gap.
-- `src/feature_engineering/rolling_features.py` (ML-FE-003): rolling
-  mean/median/std over 7/14/30-day windows, same continuity guard.
-- `src/feature_engineering/scaling.py` (ML-FE-004): StandardScaler/
-  MinMaxScaler/RobustScaler support — implemented but not auto-applied
-  (Handbook policy: scaling is a per-model Milestone 4 decision).
-- 35 unit tests across the 5 new modules, including a dedicated test
-  proving the gap-guard prevents lag values from crossing the 2022 gap.
-- `notebooks/04_feature_engineering.ipynb` — real, executed pipeline on
-  the actual dataset producing `delhi_aqi_features.csv`, `train.csv`,
-  `val.csv`, `test.csv`.
-- `data/metadata/FEATURE_DOCUMENTATION.md` — MS-003 deliverable, including
-  an explicit Group A (safe for modeling) / Group B (exclude — leakage
-  risk) column split.
+### Added (Milestone 4 — Machine Learning Development)
+- `src/feature_engineering/model_matrix.py`: centralized, leakage-safe
+  feature selection (Group A only) + Season one-hot encoding.
+- `src/evaluation/metrics.py` (ML-EVAL-001): MAE/MSE/RMSE/R² with input
+  validation.
+- `src/models/model_trainer.py` (ML-MODEL-001..004): Linear Regression
+  (mandatory baseline), Random Forest (mandatory), Gradient Boosting
+  (optional, zero extra dependencies), + feature importance extraction.
+- `src/models/hyperparameter_tuning.py` (ML-OPT-001): GridSearchCV with
+  `TimeSeriesSplit` (never shuffled K-Fold, per Handbook D.38).
+- `src/models/model_io.py` (ML-REG-001): model save/load with metadata
+  sidecar JSON (algorithm, features, metrics, dataset version, timestamp).
+- 30 new unit tests across the 4 new/completed modules.
+- `notebooks/05_model_training.ipynb`: trains + tunes all 4 models on
+  `train.csv`, ranks on `val.csv`, saves all 4 (not just the winner).
+- `notebooks/06_model_evaluation.ipynb`: final test-set evaluation
+  (touched exactly once), 6 required visualizations (ML-EVAL-002 minimum
+  is 4), forecast CSV output (FR-FORECAST-002).
+- `data/metadata/MODEL_EVALUATION_REPORT.md` — MS-004 deliverable.
+- `models/trained/*.joblib` + metadata — all 4 trained models.
+- `outputs/forecasts/test_set_forecast.csv`.
 
 ### Key finding
-- The 366 "missing days" found in EDA are not scattered — it's **all of
-  2022 missing** (365 consecutive days) plus one isolated day. Naive
-  `.shift()`/`.rolling()` on row-ordered data would have silently reached
-  back into December 2021 for early-2023 rows. Fixed by reindexing to a
-  continuous daily calendar before computing any lag/rolling feature.
+- **Linear Regression outperformed both Random Forest (tuned and
+  untuned) and Gradient Boosting** on the held-out test set (MAE 26.06 vs
+  26.25/27.00/27.98). Consistent between validation and test — not
+  overfitting-driven. Explained by short-horizon AQI autocorrelation being
+  the dominant signal, a regime where linear models are competitive.
+  Selected as the production model on this evidence.
