@@ -1,0 +1,40 @@
+{
+  "algorithm": "LinearRegression",
+  "feature_names": [
+    "Month",
+    "Quarter",
+    "Week",
+    "Day",
+    "DayOfWeek",
+    "IsWeekend",
+    "DayOfYear",
+    "Lag_1",
+    "Lag_3",
+    "Lag_7",
+    "Lag_14",
+    "Lag_30",
+    "Rolling_Mean_7",
+    "Rolling_Mean_14",
+    "Rolling_Mean_30",
+    "Rolling_Median_7",
+    "Rolling_Median_14",
+    "Rolling_Median_30",
+    "Rolling_Std_7",
+    "Rolling_Std_14",
+    "Rolling_Std_30",
+    "Season_Post-Monsoon",
+    "Season_Summer",
+    "Season_Winter"
+  ],
+  "training_dataset": "data/processed/train.csv",
+  "training_rows": 1470,
+  "validation_metrics": {
+    "MAE": 25.914603892030836,
+    "MSE": 1273.5217325467668,
+    "RMSE": 35.68643625450385,
+    "R2": 0.9012141764707517
+  },
+  "random_seed": 42,
+  "saved_at": "2026-09-06T11:37:15.120039+00:00",
+  "model_class": "LinearRegression"
+}

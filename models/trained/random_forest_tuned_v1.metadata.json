@@ -1,0 +1,40 @@
+{
+  "algorithm": "RandomForestRegressor",
+  "feature_names": [
+    "Month",
+    "Quarter",
+    "Week",
+    "Day",
+    "DayOfWeek",
+    "IsWeekend",
+    "DayOfYear",
+    "Lag_1",
+    "Lag_3",
+    "Lag_7",
+    "Lag_14",
+    "Lag_30",
+    "Rolling_Mean_7",
+    "Rolling_Mean_14",
+    "Rolling_Mean_30",
+    "Rolling_Median_7",
+    "Rolling_Median_14",
+    "Rolling_Median_30",
+    "Rolling_Std_7",
+    "Rolling_Std_14",
+    "Rolling_Std_30",
+    "Season_Post-Monsoon",
+    "Season_Summer",
+    "Season_Winter"
+  ],
+  "training_dataset": "data/processed/train.csv",
+  "training_rows": 1470,
+  "validation_metrics": {
+    "MAE": 26.722462527545968,
+    "MSE": 1379.8741234056433,
+    "RMSE": 37.14665696136926,
+    "R2": 0.8929645265065626
+  },
+  "random_seed": 42,
+  "saved_at": "2026-09-06T11:37:15.184590+00:00",
+  "model_class": "RandomForestRegressor"
+}
