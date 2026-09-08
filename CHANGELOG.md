@@ -5,32 +5,37 @@ are documented in this file.
 
 ## [Unreleased]
 
-### Added (Milestone 4 — Machine Learning Development)
-- `src/feature_engineering/model_matrix.py`: centralized, leakage-safe
-  feature selection (Group A only) + Season one-hot encoding.
-- `src/evaluation/metrics.py` (ML-EVAL-001): MAE/MSE/RMSE/R² with input
-  validation.
-- `src/models/model_trainer.py` (ML-MODEL-001..004): Linear Regression
-  (mandatory baseline), Random Forest (mandatory), Gradient Boosting
-  (optional, zero extra dependencies), + feature importance extraction.
-- `src/models/hyperparameter_tuning.py` (ML-OPT-001): GridSearchCV with
-  `TimeSeriesSplit` (never shuffled K-Fold, per Handbook D.38).
-- `src/models/model_io.py` (ML-REG-001): model save/load with metadata
-  sidecar JSON (algorithm, features, metrics, dataset version, timestamp).
-- 30 new unit tests across the 4 new/completed modules.
-- `notebooks/05_model_training.ipynb`: trains + tunes all 4 models on
-  `train.csv`, ranks on `val.csv`, saves all 4 (not just the winner).
-- `notebooks/06_model_evaluation.ipynb`: final test-set evaluation
-  (touched exactly once), 6 required visualizations (ML-EVAL-002 minimum
-  is 4), forecast CSV output (FR-FORECAST-002).
-- `data/metadata/MODEL_EVALUATION_REPORT.md` — MS-004 deliverable.
-- `models/trained/*.joblib` + metadata — all 4 trained models.
-- `outputs/forecasts/test_set_forecast.csv`.
+### Added (Milestone 5, Part A — Dashboard Services Layer)
+- `src/services/forecast_service.py` (FR-FORECAST-001/002): **recursive
+  multi-day forecasting engine** — predicts real future dates beyond the
+  dataset's last known date (2024-12-31), by feeding each day's own
+  prediction forward as the next day's `Lag_1`/rolling inputs. This was
+  explicitly flagged as missing at the end of Milestone 4.
+  - Rejects non-continuous seed history (reuses the same gap-safety
+    guarantee as `lag_features.py`/`rolling_features.py`).
+  - Includes an honestly-labeled (not statistical) confidence heuristic
+    that decreases with forecast horizon, since recursive forecasts
+    compound uncertainty.
+  - Verified against a real trained model + real data: forecasts Jan 2025
+    as "Very Unhealthy" (240-278 AQI), consistent with the strong winter
+    seasonality found in EDA.
+- `src/services/health_service.py` (UI-HEALTH-001): health guidance for
+  all 6 AQI categories (description, health risk, outdoor recommendation,
+  safety advice), with an explicit non-medical-advice disclaimer.
+- `src/services/data_service.py`: dashboard-facing data/model loading
+  (thin wrappers over already-tested modules — no new business logic, no
+  Streamlit dependency, independently testable).
+- `src/services/report_service.py` (FR-REPORT-001/002): CSV export
+  (always available) and PDF export via `reportlab` (confirmed available;
+  raises a clear error if missing rather than an opaque traceback).
+- 49 new unit tests across the 4 new services, including a dedicated
+  identity-model test proving the forecast recursion mechanics are
+  correct in isolation from any real model's prediction error.
 
-### Key finding
-- **Linear Regression outperformed both Random Forest (tuned and
-  untuned) and Gradient Boosting** on the held-out test set (MAE 26.06 vs
-  26.25/27.00/27.98). Consistent between validation and test — not
-  overfitting-driven. Explained by short-horizon AQI autocorrelation being
-  the dominant signal, a regime where linear models are competitive.
-  Selected as the production model on this evidence.
+### Known limitation (documented, not hidden)
+- **Streamlit itself is not installed in this development sandbox** (no
+  outbound network to `pip install`), so the actual dashboard UI pages
+  (Milestone 5, Part B) cannot be execute-tested here the way the
+  notebooks were. The services layer above has zero Streamlit dependency
+  and is fully tested; UI pages will need local verification once you run
+  `pip install -r requirements.txt && streamlit run dashboard/app.py`.
