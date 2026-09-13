@@ -1,0 +1,12 @@
+# Base theme — stable, documented Streamlit API (guaranteed to apply
+# regardless of Streamlit version, unlike CSS targeting internal classes).
+# "Clear Sky" palette: bright, cool-toned, blue accent -- deliberately not
+# the cream/terracotta or dark/acid-green AI-dashboard defaults.
+
+[theme]
+base = "light"
+primaryColor = "#2D7DD2"
+backgroundColor = "#FAFCFF"
+secondaryBackgroundColor = "#EAF1F8"
+textColor = "#17263B"
+font = "sans serif"
