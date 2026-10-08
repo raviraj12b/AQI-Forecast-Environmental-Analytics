@@ -15,17 +15,23 @@ ROLLING_FEATURE_COLUMNS = [
     "Rolling_Median_7", "Rolling_Median_14", "Rolling_Median_30",
     "Rolling_Std_7", "Rolling_Std_14", "Rolling_Std_30",
 ]
+# Fixed, sorted category list so one-hot encoding yields identical columns on
+# every call, even when a split lacks a season (alphabetical order keeps the
+# same dropped baseline, "Monsoon", as the original get_dummies behaviour).
+SEASON_CATEGORIES = ["Monsoon", "Post-Monsoon", "Summer", "Winter"]
 EXCLUDED_LEAKAGE_COLUMNS = ["PM2.5", "PM10", "NO2", "SO2", "CO", "O3"]
 EXCLUDED_OTHER_COLUMNS = ["City", "Year", "Date"]
 
 
 def build_model_matrix(df: pd.DataFrame, target_column: str = "AQI") -> Tuple[pd.DataFrame, pd.Series, List[str]]:
+    """Build the leakage-safe feature matrix, target and ordered feature names from a featured DataFrame."""
     required = DATE_FEATURE_COLUMNS + LAG_FEATURE_COLUMNS + ROLLING_FEATURE_COLUMNS
     missing = [col for col in required if col not in df.columns]
     if missing:
         raise KeyError(f"Missing required feature columns: {missing}")
 
     feature_df = df[required].copy()
+    feature_df["Season"] = pd.Categorical(feature_df["Season"], categories=SEASON_CATEGORIES)
     feature_df = pd.get_dummies(feature_df, columns=["Season"], drop_first=True)
 
     y = df[target_column]
