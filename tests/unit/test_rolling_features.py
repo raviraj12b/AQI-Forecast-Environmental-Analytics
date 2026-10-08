@@ -1,6 +1,5 @@
 """Unit tests for src.feature_engineering.rolling_features (FR-FE-003)."""
 
-import numpy as np
 import pandas as pd
 import pytest
 

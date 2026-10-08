@@ -14,7 +14,7 @@ def test_every_config_category_has_guidance():
 
 def test_guidance_has_all_required_fields():
     required_fields = {"category", "aqi_range", "description", "health_risk",
-                        "outdoor_recommendation", "safety_advice"}
+                       "outdoor_recommendation", "safety_advice"}
     for cat in AQI_CATEGORIES:
         guidance = get_health_recommendation(cat["label"])
         assert required_fields.issubset(guidance.keys())

@@ -1,6 +1,5 @@
 """Unit tests for src.feature_engineering.scaling (FR-FE-004)."""
 
-import numpy as np
 import pandas as pd
 import pytest
 
