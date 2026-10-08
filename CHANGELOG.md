@@ -42,3 +42,20 @@ flagged as a blind spot rather than trusted.
 
 ## Milestone 5 (Dashboard Development): COMPLETE
 Dashboard ✅ · Interactive charts ✅ · Forecast page ✅ · Report download ✅
+
+## Milestone 6 (Testing & QA): COMPLETE (with noted limitations)
+
+### Added
+- `tests/integration/test_full_pipeline.py` (3 tests): end-to-end pipeline and production-model reproducibility.
+- `tests/functional/test_dashboard_pages.py` (10 tests): renders every dashboard page via Streamlit `AppTest`.
+- Regression test for Season one-hot consistency in `tests/unit/test_model_matrix.py`.
+- `docs/reports/TEST_REPORT.md`.
+
+### Fixed
+- `build_model_matrix()` Season encoding now uses a fixed category list, so columns are identical regardless of which seasons a split contains. No change to the trained model or its 24 features.
+
+### Changed
+- Code review pass: removed unused imports, added 17 missing docstrings, fixed whitespace style issues.
+
+### Known issues
+- Some lines exceed 120 characters; manual browser testing not yet done (see Test Report).
