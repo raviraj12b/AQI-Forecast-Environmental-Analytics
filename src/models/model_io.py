@@ -13,6 +13,7 @@ logger = get_logger(__name__)
 
 
 def save_model(model, path: Union[str, Path], metadata: Dict) -> Path:
+    """Serialize a model with its metadata to disk using joblib."""
     model_path = Path(path)
     model_path.parent.mkdir(parents=True, exist_ok=True)
     metadata = dict(metadata)
@@ -27,6 +28,7 @@ def save_model(model, path: Union[str, Path], metadata: Dict) -> Path:
 
 
 def load_model(path: Union[str, Path]) -> Tuple[object, Dict]:
+    """Load a serialized model and its metadata from disk."""
     model_path = Path(path)
     metadata_path = model_path.with_suffix(".metadata.json")
     if not model_path.exists():

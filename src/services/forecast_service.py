@@ -27,7 +27,6 @@ from config.constants import AQI_CATEGORIES
 from src.feature_engineering.date_features import _month_to_season
 from src.feature_engineering.lag_features import DEFAULT_LAGS
 from src.feature_engineering.rolling_features import DEFAULT_STATS, DEFAULT_WINDOWS
-from src.feature_engineering.time_series_prep import reindex_to_daily_calendar
 from src.utils.logger import get_logger
 
 logger = get_logger(__name__)
@@ -98,6 +97,7 @@ def _build_feature_row(
 
 @dataclass
 class ForecastDay:
+    """One forecasted day: date, predicted AQI, category and confidence label."""
     date: pd.Timestamp
     predicted_aqi: float
     predicted_category: str

@@ -18,6 +18,7 @@ APPROVED_MISSING_VALUE_STRATEGIES = (
 
 
 def handle_missing_values(df: pd.DataFrame, strategy: str = "median", columns: Optional[Sequence[str]] = None) -> tuple:
+    """Fill or drop missing values using the chosen strategy (default: median)."""
     if strategy not in APPROVED_MISSING_VALUE_STRATEGIES:
         raise ValueError(
             f"Unknown missing-value strategy '{strategy}'. "
@@ -57,6 +58,7 @@ def handle_missing_values(df: pd.DataFrame, strategy: str = "median", columns: O
 
 
 def remove_duplicate_rows(df: pd.DataFrame, subset: Optional[Sequence[str]] = None) -> tuple:
+    """Drop duplicate rows and return the cleaned frame with the removed count."""
     n_before = len(df)
     cleaned = df.drop_duplicates(subset=subset, keep="first").reset_index(drop=True)
     n_removed = n_before - len(cleaned)
@@ -66,6 +68,7 @@ def remove_duplicate_rows(df: pd.DataFrame, subset: Optional[Sequence[str]] = No
 
 @dataclass
 class OutlierResult:
+    """Outlier detection result for one column."""
     column: str
     method: str
     count: int
@@ -75,6 +78,7 @@ class OutlierResult:
 
 
 def detect_outliers_iqr(df: pd.DataFrame, columns: Sequence[str], multiplier: float = 1.5) -> dict:
+    """Detect outliers per column using the IQR rule."""
     results = {}
     for col in columns:
         series = df[col].dropna()
@@ -89,6 +93,7 @@ def detect_outliers_iqr(df: pd.DataFrame, columns: Sequence[str], multiplier: fl
 
 
 def detect_outliers_zscore(df: pd.DataFrame, columns: Sequence[str], threshold: float = 3.0) -> dict:
+    """Detect outliers per column using the Z-score threshold."""
     results = {}
     for col in columns:
         series = df[col]

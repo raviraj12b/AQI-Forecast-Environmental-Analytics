@@ -3,7 +3,6 @@ Date feature extraction for the AQI Forecast & Environmental Analytics
 Platform (FR-FE-001 / ML-FE-001).
 """
 
-from typing import Union
 
 import pandas as pd
 

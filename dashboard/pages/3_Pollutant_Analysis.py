@@ -59,7 +59,7 @@ with col2:
 
 st.write("")
 st.markdown(f"**{pollutant} — Average by Month**")
-month_names = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
+month_names = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 monthly_avg = df.groupby("Month")[pollutant].mean().reindex(range(1, 13))
 monthly_avg.index = month_names
 st.bar_chart(monthly_avg, height=300)

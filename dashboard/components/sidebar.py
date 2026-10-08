@@ -9,6 +9,7 @@ from dashboard.styles.theme import COLORS
 
 
 def render_sidebar_branding():
+    """Render the Clear Sky branding block in the sidebar."""
     import streamlit as st
 
     from src.services.data_service import load_cleaned_dataset

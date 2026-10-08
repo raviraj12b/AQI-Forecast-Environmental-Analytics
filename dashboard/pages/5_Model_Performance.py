@@ -12,7 +12,7 @@ import pandas as pd
 import streamlit as st
 
 from components.sidebar import render_sidebar_branding
-from styles.theme import COLORS, inject_custom_css
+from styles.theme import inject_custom_css
 from src.services.data_service import (
     PRODUCTION_MODEL_FILENAME,
     load_all_model_metadata,

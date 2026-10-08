@@ -16,6 +16,7 @@ MODEL_REGISTRY = {
 
 
 def train_model(model_name: str, X_train, y_train, **model_kwargs):
+    """Train a registered model by name on the given training data."""
     if model_name not in MODEL_REGISTRY:
         raise ValueError(f"Unknown model '{model_name}'. Available: {list(MODEL_REGISTRY)}")
     model = MODEL_REGISTRY[model_name]()
@@ -27,6 +28,7 @@ def train_model(model_name: str, X_train, y_train, **model_kwargs):
 
 
 def get_feature_importance(model, feature_names) -> dict:
+    """Return feature importances (or coefficients) keyed by feature name."""
     if hasattr(model, "feature_importances_"):
         importances = model.feature_importances_
     elif hasattr(model, "coef_"):

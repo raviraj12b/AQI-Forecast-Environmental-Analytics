@@ -9,7 +9,6 @@ for _p in (_PROJECT_ROOT, _PROJECT_ROOT / "dashboard"):
         sys.path.insert(0, str(_p))
 
 import matplotlib.pyplot as plt
-import pandas as pd
 import seaborn as sns
 import streamlit as st
 
@@ -72,7 +71,7 @@ with tab3:
     col1, col2 = st.columns(2)
     with col1:
         st.markdown("**Average AQI by Month**")
-        month_names = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
+        month_names = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
         monthly_avg = df.groupby("Month")["AQI"].mean().reindex(range(1, 13))
         monthly_avg.index = month_names
         st.bar_chart(monthly_avg, height=320)

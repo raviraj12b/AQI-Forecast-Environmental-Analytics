@@ -14,7 +14,7 @@ import streamlit as st
 from components.aqi_badge import render_aqi_badge
 from components.kpi import render_hero_metric
 from components.sidebar import render_sidebar_branding
-from styles.theme import COLORS, inject_custom_css
+from styles.theme import inject_custom_css
 from src.services.data_service import load_cleaned_dataset, load_production_model
 from src.services.forecast_service import generate_future_forecast
 

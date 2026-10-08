@@ -12,19 +12,23 @@ logger = get_logger(__name__)
 
 @dataclass
 class RegressionMetrics:
+    """Container for MAE, MSE, RMSE and R2 regression metrics."""
     mae: float
     mse: float
     rmse: float
     r2: float
 
     def summary(self) -> str:
+        """Return a one-line formatted metrics summary."""
         return f"MAE={self.mae:.2f}  MSE={self.mse:.2f}  RMSE={self.rmse:.2f}  R2={self.r2:.4f}"
 
     def to_dict(self) -> dict:
+        """Return the metrics as a plain dictionary."""
         return {"MAE": self.mae, "MSE": self.mse, "RMSE": self.rmse, "R2": self.r2}
 
 
 def calculate_regression_metrics(y_true, y_pred) -> RegressionMetrics:
+    """Compute MAE, MSE, RMSE and R2 for actual vs predicted values."""
     y_true = np.asarray(y_true)
     y_pred = np.asarray(y_pred)
     if y_true.shape != y_pred.shape:

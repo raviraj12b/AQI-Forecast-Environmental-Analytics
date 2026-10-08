@@ -10,6 +10,7 @@ logger = get_logger(__name__)
 
 
 def tune_with_grid_search(estimator, param_grid: Dict, X_train, y_train, n_splits: int = 5, scoring: str = "neg_mean_absolute_error") -> Tuple[object, Dict, float]:
+    """Run time-series-aware grid search and return the fitted search object."""
     tscv = TimeSeriesSplit(n_splits=n_splits)
     search = GridSearchCV(estimator, param_grid, cv=tscv, scoring=scoring, n_jobs=-1)
     search.fit(X_train, y_train)
